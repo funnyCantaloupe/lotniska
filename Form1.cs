@@ -30,12 +30,17 @@ namespace lotniska
 
             using (StreamReader sr = new StreamReader(sciezkaDoPliku))
             {
+                listView1.Items.Clear();
+                listView1.Columns.Clear();
+
                 string[] naglowki = sr.ReadLine().Split(',');
 
                 foreach (var naglowek in naglowki)
                 {
                     listView1.Columns.Add(naglowek);
                 }
+
+                int liczbaPasażerówIndex = Array.IndexOf(naglowki, "Ofic. liczba pasażerów (2019)[1]");
 
                 while (!sr.EndOfStream)
                 {
@@ -47,14 +52,11 @@ namespace lotniska
                     {
                         string wartośćPola = elementy[i].Trim();
 
-                        
-                        if (wartośćPola.StartsWith("\"") && wartośćPola.EndsWith("\""))
+                        if (i == liczbaPasażerówIndex)
                         {
-                            wartośćPola = wartośćPola.Substring(1, wartośćPola.Length - 2);
+                            item.SubItems.Add(wartośćPola);
+                            break; 
                         }
-
-                       
-                        wartośćPola = wartośćPola.Replace(" ", "");
 
                         item.SubItems.Add(wartośćPola);
                     }
@@ -64,10 +66,10 @@ namespace lotniska
             }
 
             listView1.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
+
+
+            listView1.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
         }
-
-
-
 
 
 
@@ -105,11 +107,11 @@ namespace lotniska
             }
             else
             {
-                form2.label1.Invoke((MethodInvoker)delegate { form2.label1.Text = ""; });
-                form2.label2.Invoke((MethodInvoker)delegate { form2.label2.Text = ""; });
-                form2.label3.Invoke((MethodInvoker)delegate { form2.label3.Text = ""; });
-                form2.label4.Invoke((MethodInvoker)delegate { form2.label4.Text = ""; });
-                form2.label5.Invoke((MethodInvoker)delegate { form2.label5.Text = ""; });
+                form2.label1.Text = "";
+                form2.label2.Text = "";
+                form2.label3.Text = "";
+                form2.label4.Text = "";
+                form2.label5.Text = "";
             }
         }
 
@@ -137,7 +139,29 @@ namespace lotniska
 
         private void button1_Click(object sender, EventArgs e)
         {
-            form2.Show();
+            
+            DialogResult result = form2.ShowDialog();
+
+            
+            if (result == DialogResult.OK)
+            {
+                
+                string label1Value = form2.Label1Text;
+                string label2Value = form2.Label2Text;
+                string label3Value = form2.Label3Text;
+                string label4Value = form2.Label4Text;
+                string label5Value = form2.Label5Text;
+
+                
+
+                
+                string filePath = "C:/Users/Administrator/source/repos/lotniska/szczegoly.csv";
+
+                using (StreamWriter sw = new StreamWriter(filePath, true))
+                {
+                    sw.WriteLine($"{label1Value},{label2Value},{label3Value},{label4Value},{label5Value}");
+                }
+            }
         }
 
         private void checkBox1_CheckedChanged(object sender, EventArgs e)

@@ -9,14 +9,18 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
 
-
 namespace lotniska
 {
     public partial class Form1 : Form
     {
+      
+        public Form2 form2;
         public Form1()
         {
             InitializeComponent();
+            WczytajDaneZCSV("C:/Users/Administrator/source/repos/lotniska/DaneTestowe.csv");
+            form2 = new Form2(this);
+            
         }
 
         private void WczytajDaneZCSV(string sciezkaDoPliku)
@@ -26,32 +30,36 @@ namespace lotniska
 
             using (StreamReader sr = new StreamReader(sciezkaDoPliku))
             {
-                string linia;
-                bool pierwszyWiersz = true;
+                string[] naglowki = sr.ReadLine().Split(',');
 
-                while ((linia = sr.ReadLine()) != null)
+                foreach (var naglowek in naglowki)
                 {
-                    string[] elementy = linia.Split(',');
+                    listView1.Columns.Add(naglowek);
+                }
 
-                    if (pierwszyWiersz)
+                while (!sr.EndOfStream)
+                {
+                    string[] elementy = sr.ReadLine().Split(',');
+
+                    ListViewItem item = new ListViewItem(elementy[0]);
+
+                    for (int i = 1; i < elementy.Length; i++)
                     {
-                        foreach (var element in elementy)
-                        {
-                            listView1.Columns.Add(element);
-                        }
-                        pierwszyWiersz = false;
-                    }
-                    else
-                    {
-                        ListViewItem item = new ListViewItem(elementy[0]);
+                        string wartośćPola = elementy[i].Trim();
 
-                        for (int i = 1; i < elementy.Length; i++)
+                        
+                        if (wartośćPola.StartsWith("\"") && wartośćPola.EndsWith("\""))
                         {
-                            item.SubItems.Add(elementy[i]);
+                            wartośćPola = wartośćPola.Substring(1, wartośćPola.Length - 2);
                         }
 
-                        listView1.Items.Add(item);
+                       
+                        wartośćPola = wartośćPola.Replace(" ", "");
+
+                        item.SubItems.Add(wartośćPola);
                     }
+
+                    listView1.Items.Add(item);
                 }
             }
 
@@ -59,19 +67,107 @@ namespace lotniska
         }
 
 
+
+
+
+
+        private void listView1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (listView1.SelectedItems.Count > 0)
+            {
+                ListViewItem selectedItem = listView1.SelectedItems[0];
+                string kodICAO = selectedItem.SubItems[2].Text;  
+                string kodIATA = selectedItem.SubItems[3].Text;  
+                string liczbaPasażerów = selectedItem.SubItems[6].Text;  
+                string województwo = selectedItem.SubItems[1].Text;  
+                string miasto = selectedItem.SubItems[0].Text;  
+
+                if (checkBox1.Checked)
+                {
+                    form2.label1.Text = kodICAO;
+                }
+                if (checkBox2.Checked)
+                {
+                    form2.label2.Text = kodIATA;
+                }
+                if (checkBox3.Checked)
+                {
+                    form2.label3.Text = liczbaPasażerów;
+                }
+                if (checkBox4.Checked)
+                {
+                    form2.label4.Text = województwo;
+                }
+               if (checkBox5.Checked)
+                {
+                    form2.label5.Text = miasto;
+                }
+            }
+            else
+            {
+                form2.label1.Invoke((MethodInvoker)delegate { form2.label1.Text = ""; });
+                form2.label2.Invoke((MethodInvoker)delegate { form2.label2.Text = ""; });
+                form2.label3.Invoke((MethodInvoker)delegate { form2.label3.Text = ""; });
+                form2.label4.Invoke((MethodInvoker)delegate { form2.label4.Text = ""; });
+                form2.label5.Invoke((MethodInvoker)delegate { form2.label5.Text = ""; });
+            }
+        }
+
+        
+
+
         private void checkedListBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
-
+           
         }
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            WczytajDaneZCSV("C:/Users/Administrator/source/repos/lotniska/DaneTestowe.csv");
+            form2.label1.Text = "";
+            form2.label2.Text = "";
+            form2.label3.Text = "";
+            form2.label4.Text = "";
+            form2.label5.Text = "";
         }
 
-        private void listView1_SelectedIndexChanged(object sender, EventArgs e)
+        private void label1_Click(object sender, EventArgs e)
         {
 
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            form2.Show();
+        }
+
+        private void checkBox1_CheckedChanged(object sender, EventArgs e)
+        {
+          
+            
+        }
+
+        private void checkBox2_CheckedChanged(object sender, EventArgs e)
+        {
+            
+            
+        }
+
+        private void checkBox3_CheckedChanged(object sender, EventArgs e)
+        {
+           
+           
+        }
+
+        private void checkBox4_CheckedChanged(object sender, EventArgs e)
+        {
+            
+            
+        }
+
+        private void checkBox5_CheckedChanged(object sender, EventArgs e)
+        {
+          
+            
         }
     }
 }
